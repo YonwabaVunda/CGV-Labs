@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 1, Exercise 1</title>
+<script>
+    var canvas;
+    var graphics;
+    function line(x1, y1, x2, y2) {
+        graphics.beginPath();
+        graphics.moveTo(x1, y1);
+        graphics.lineTo(x2, y2);
+        graphics.stroke();
+    }
+    function Axes(x1,y1,x2,y2){
+        for(var i = x1; i <= x2; i += 60){
+            line(i, y1, i, y2); // vertical lines
+            line(x1, i, x2, i); // horizontal lines
+        }
+    }
+    function circle(x, y, radius) {
+        graphics.beginPath();
+        graphics.strokeStyle = "Green";
+        let steps = 100; // Number of segments
+        for (let i = 0; i <= steps; i++) {
+            let theta = (i / steps) * 2 * Math.PI;
+            let px = x + radius * Math.cos(theta);
+            let py = y + radius * Math.sin(theta);
+            if (i === 0) {
+                graphics.moveTo(px, py);
+            } else {
+                graphics.lineTo(px, py);
+            }
+        }
+        graphics.closePath();
+        graphics.stroke();
+    }
+    function minHourLines(x, y, radius) {
+        // Draw hour marks
+        for (let i = 0; i < 12; i++) {
+            let theta = (i / 12) * 2 * Math.PI;
+            let innerRadius = radius - 50;
+            let outerRadius = radius;
+            let x1 =  x + innerRadius * Math.cos(theta);
+            let y1 =  y + innerRadius * Math.sin(theta);
+            let x2 =  x + outerRadius * Math.cos(theta);
+            let y2 =  y + outerRadius * Math.sin(theta);
+            graphics.beginPath();
+            graphics.strokeStyle = "Orange";
+            graphics.moveTo(x1, y1);
+            graphics.lineTo(x2, y2);
+            graphics.stroke();
+        }
+        // Draw minute marks
+        for (let i = 0; i < 60; i++) {
+            let theta = (i / 60) * 2 * Math.PI;
+            let innerRadius = radius - 15;
+            let outerRadius = radius;
+            let x1 = x + innerRadius * Math.cos(theta);
+            let y1 = y + innerRadius * Math.sin(theta);
+            let x2 = x + outerRadius * Math.cos(theta);
+            let y2 = y + outerRadius * Math.sin(theta);
+            graphics.beginPath();
+            graphics.strokeStyle = "Black";
+            graphics.moveTo(x1, y1);
+            graphics.lineTo(x2, y2);
+            graphics.stroke();
+        }
+    }
+    function displayDate(){
+        let d = new Date();
+        document.getElementById("dateTime").innerHTML = d;
+    }
+    function drawHands(x, y, radius) {
+        const date = new Date();
+        const sec = date.getUTCSeconds();
+        const min = date.getUTCMinutes();
+        const hour = date.getUTCHours() % 12;
+        const secTheta = (sec / 60) * 2 * Math.PI - Math.PI / 2;
+        const minTheta = ((min + sec / 60) / 60) * 2 * Math.PI - Math.PI / 2;
+        const hourTheta = ((hour + min / 60) / 12) * 2 * Math.PI - Math.PI / 2;
+
+        // Second hand
+        graphics.beginPath();
+        graphics.strokeStyle = "red";
+        graphics.moveTo(x, y);
+        graphics.lineTo(x + (radius - 40) * Math.cos(secTheta),y + (radius - 40) * Math.sin(secTheta));
+        graphics.stroke();
+
+        // Minute hand
+        graphics.beginPath();
+        graphics.strokeStyle = "black";
+        graphics.lineWidth = 3;
+        graphics.moveTo(x, y);
+        graphics.lineTo(x + (radius - 60) * Math.cos(minTheta),y + (radius - 60) * Math.sin(minTheta));
+        graphics.stroke();
+        graphics.lineWidth = 1;
+
+        // Hour hand
+        graphics.beginPath();
+        graphics.strokeStyle = "black";
+        graphics.lineWidth = 5;
+        graphics.moveTo(x, y);
+        graphics.lineTo(x + (radius - 100) * Math.cos(hourTheta),y + (radius - 100) * Math.sin(hourTheta));
+        graphics.stroke();
+        graphics.lineWidth = 1; 
+        graphics.strokeStyle = "black";
+    }
+    function init(){
+        canvas = document.getElementById("myCanvas");
+        graphics = canvas.getContext("2d");
+        graphics.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+        //Axes(0, 0, 600, 600); // Draw the axes
+        circle(300, 300, 240); // Draw a circle at the center with radius 240
+        minHourLines(300, 300, 240); // Draw minute and hour lines
+        displayDate(); // Display the current date and time
+        drawHands(300, 300, 240); // Draw the clock hands
+    }
+    window.onload = function(){
+        init();
+        setInterval(init, 1000);
+    }
+</script>
+</head>
+    <body>
+    <h1>My Heading</h1>
+    <p id="dateTime"></p>
+    <canvas id="myCanvas" width="600" height="600"
+    style="border:1px solid #d3d3d3;">
+    Your browser does not support the HTML5 canvas tag.
+    </canvas>
+    </body>
+</html>
